@@ -36,6 +36,7 @@ function makeChain(
     streaming: true,
     temperature: 0,
     verbose: true,
+    openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     callbacks: [
       {
         async handleLLMNewToken(token) {
@@ -50,6 +51,7 @@ function makeChain(
   });
   const nonStreamingModel = new ChatOpenAI({
     modelName: "gpt-3.5-turbo",
+    openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     verbose: true,
     temperature: 0,
   });

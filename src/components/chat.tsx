@@ -4,13 +4,13 @@ import { useRef, useState } from "react";
 import { InputMessage } from "./input-message";
 import { scrollToBottom, initialMessage } from "@/lib/utils";
 import { ChatLine } from "./chat-line";
-import { ChatGPTMessage } from "@/types";
+import { ChatGPTMessage, DocumentInfo } from "@/types";
 
-export function Chat() {
+export function Chat({ fileName }: { fileName: string }) {
   const endpoint = "/api/chat";
   const [input, setInput] = useState("");
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessages] = useState<ChatGPTMessage[]>(initialMessage);
+  const [messages, setMessages] = useState<ChatGPTMessage[]>(initialMessage(fileName));
   const [chatHistory, setChatHistory] = useState<[string, string][]>([]);
   const [streamingAIContent, setStreamingAIContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -37,8 +37,12 @@ export function Chat() {
     streamingAIContent: string,
     sourceDocuments: string
   ) => {
-    const sources = JSON.parse(sourceDocuments);
+    const sourceContents: DocumentInfo[] = JSON.parse(sourceDocuments);
+    let sources: DocumentInfo[] = [];
 
+    sourceContents.forEach((element) => {
+      sources.push(element);
+    });
     // Add the streamed message as the AI response
     // And clear the streamingAIContent state
     updateMessages({
@@ -80,10 +84,19 @@ export function Chat() {
         }
 
         const text = new TextDecoder().decode(value);
-        if (text === "tokens-ended" && !tokensEnded) {
+        if (text.includes("tokens-ended") && !tokensEnded) {
           tokensEnded = true;
+
+          let texts = text.split("tokens-ended");
+          if (texts.length > 1) {
+            streamingAIContent = streamingAIContent + texts[0];
+            updateStreamingAIContent(streamingAIContent);
+          }
+          if (texts.length > 2) {
+            sourceDocuments += texts[1];
+          }
         } else if (tokensEnded) {
-          sourceDocuments = text;
+          sourceDocuments += text;
         } else {
           streamingAIContent = streamingAIContent + text;
           updateStreamingAIContent(streamingAIContent);

@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import "filepond/dist/filepond.min.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

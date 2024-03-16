@@ -44,10 +44,11 @@ export function sanitizeAndFormatText(inputText: string) {
 }
 
 // Default UI Message
-export const initialMessage: ChatGPTMessage[] = [
-  {
-    role: "assistant",
-    content:
-      "Hi! I am your PDF assistant. Please load your pdf data into my knowledge store using the command `npm run prepare:data`. Once done you can ask any question about it !! ",
-  },
-];
+export const initialMessage = (fileName: string): ChatGPTMessage[] => {
+  return [
+    {
+      role: "assistant",
+      content: `Hi! I am your PDF assistant. Let discover all the knowledge of the file uploaded (${fileName}). Ask me anything!`,
+    },
+  ];
+};
